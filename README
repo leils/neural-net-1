@@ -1,0 +1,3 @@
+Simple Neural Net, created from scratch. 
+Net will recieve 20x20 images (encoded as decimals in CSV form), and determine the number represented by the image as a digit (0 - 10) in binary. 
+Using CSVReader for input reading. 
