@@ -1,5 +1,8 @@
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+
+import com.opencsv.CSVReader;
 
 
 public class NeuralNet {
@@ -24,11 +27,31 @@ public class NeuralNet {
 		}
 	}
 	
+	public void feedCSVInput(String[] input) {
+		NeuronLayer inputLayer = layers.get(0); 
+		inputLayer.readCSV(input); 
+	}
+	
+	public void fireAllNeurons() {
+		for (NeuronLayer l : layers) {
+			l.fireNeurons();
+		}
+	}
+	
 	//Gives the first neurons their input data, then fires all 
 	public void run(int[] input) {
 		layers.get(0).feedInput(input, inputSize);
+		fireAllNeurons(); 
+	}
+	
+	
+	//Print connection weighs, separated by layers. 
+	public void printAllWeights() {
+		int num = 0;
 		for (NeuronLayer l : layers) {
-			l.fireNeurons();
+			System.out.println("Layer" + num++);
+			l.printWeights();
+			System.out.println("----------");
 		}
 	}
 	
@@ -43,6 +66,7 @@ public class NeuralNet {
 		}
 	}
 	
+	//Print a single layer's output
 	public void printLayerOutput(int i) {
 		NeuronLayer layer = layers.get(i); 
 		for (Neuron n : layer.neurons) {
@@ -50,6 +74,15 @@ public class NeuralNet {
 		}
 	}
 	
+	//Print output of all layers
+	public void printLayers() {
+		for (int i = 0; i < layers.size(); i++) {
+			System.out.println("Layer " + i ); 
+			printLayerOutput(i); 	
+		}
+	}
+	
+	//Print output of final layer
 	public void printOutput() {
 		NeuronLayer outputLayer = layers.get(layers.size() - 1);
 		for (Neuron n : outputLayer.neurons){
@@ -58,18 +91,26 @@ public class NeuralNet {
 		System.out.println("");
 	}
 	
+	//Save weights of each neuron's connections into a file, one for each layer
 	public void saveWeights() {
-		File f1 = new File("layer1.txt");
-		File f2 = new File("layer2.txt");
-		File f3 = new File("layer3.txt");
-		//File f4 = new File("layer4.txt");
-		layers.get(0).saveLayerWeights(f1);
-		layers.get(1).saveLayerWeights(f2);
-		layers.get(2).saveLayerWeights(f3);
-		//layers.get(3).saveLayerWeights(f4);
+		for (int i = 0; i < layers.size(); i++) {
+			File f = new File("layer" + i + ".txt"); 
+			layers.get(i).saveLayerWeights(f);
+		}
 	}
 	
+	//Load weights for each neuron, based on files 
 	public void loadWeights() {
+		for (int i = 0; i < layers.size(); i++) {
+			File f = new File("layer" + i + ".txt");
+			try {
+				layers.get(i).loadLayerWeights(f);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	
 		
 	}
 }

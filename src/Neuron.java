@@ -1,12 +1,13 @@
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 public class Neuron { 
 	private ArrayList<ctn> connections;
 	private double threshold; 
-	public int output;
-	private int input; 
+	public double output;
+	private double input; 
 	
 	//connection class
 	public class ctn {
@@ -26,8 +27,8 @@ public class Neuron {
 		connections = new ArrayList<ctn>();
 	}
 	
-	public void setInput(int i) {
-		input = i;
+	public void setInput(double d) {
+		input = d;
 		//System.out.println("Input: " + input); 
 	}
 	
@@ -45,9 +46,14 @@ public class Neuron {
 	public void connect(Neuron a) {
 		//avoid connecting already connected neurons
 		if (!isConnected(a)) {
-			ctn x = new ctn(0.01, a); 
+			ctn x = new ctn(Math.random(), a); 
 			connections.add(x);
-			//System.out.println("connecting");
+		}
+	}
+	
+	public void printW() {
+		for (ctn c : connections) {
+			System.out.print(c.w); 
 		}
 	}
 
@@ -58,18 +64,13 @@ public class Neuron {
 		
 		//get input/weights
 		if (connections.size() > 0) {			//MESSY
-			//System.out.println("Size at fire: " + connections.size());
 			for(ctn c : connections) {
 				sum += c.w * c.n.output; 
 			}
 		}
 		else {
 			sum = (double)input;
-			//System.out.println("initial inputs: " + sum ); 
-		}
-		
-		//System.out.println("Threshold: " + threshold); 
-		
+		}		
 		if(sum > threshold) {
 			output = 1;
 		}
@@ -84,7 +85,6 @@ public class Neuron {
 		for (ctn c : connections) {
 			if ((c.n.output == 0 && e > 0) || (c.n.output == 1 && e < 0)) {
 				c.w = c.w + e; 
-				//System.out.println("new connection weight: " + c.w);
 				c.n.updateError(e);
 			}
 		}
@@ -94,6 +94,12 @@ public class Neuron {
 	public void saveWeights(FileWriter wr) throws IOException {
 		for (ctn c : connections) {
 			wr.append(Double.toString(c.w)+ ","); 
+		}
+	}
+	
+	public void loadWeights(Scanner s) throws IOException {
+		for (ctn c : connections) {
+			c.w = s.nextDouble(); 
 		}
 	}
  

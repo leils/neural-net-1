@@ -1,7 +1,11 @@
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Scanner;
+
+import com.opencsv.CSVReader;
 
 
 public class NeuronLayer {
@@ -31,11 +35,28 @@ public class NeuronLayer {
 		}	
 	}
 	
+	public void readCSV(String[] input) {
+		int i = 0;
+		for (Neuron n : neurons) {
+			n.setInput(Double.parseDouble(input[i++]));
+		}
+
+
+		
+	}
+	
 	//Fire all neurons in this layer
 	public void fireNeurons() {
 		//System.out.println("firing neurons.");
 		for (Neuron n: neurons) {
 			n.fire();
+		}
+	}
+	
+	public void printWeights() {
+		for (Neuron n: neurons) {
+			n.printW(); 
+			System.out.println("");
 		}
 	}
 	
@@ -46,10 +67,24 @@ public class NeuronLayer {
 				n.saveWeights(wr); 
 				wr.append("\n");
 			}
+			wr.close(); 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+	}
+	
+	public void loadLayerWeights(File f) throws IOException {
+		try {
+			Scanner s = new Scanner(f);
+			for (Neuron n : neurons) {
+				n.loadWeights(s);
+			}
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		
 	}
 	
 	
